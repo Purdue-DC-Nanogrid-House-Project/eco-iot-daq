@@ -1,0 +1,2 @@
+void InitializeSensor();
+void CollectData();
