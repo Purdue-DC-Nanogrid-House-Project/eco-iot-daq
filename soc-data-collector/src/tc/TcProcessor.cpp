@@ -17,7 +17,7 @@ float floatInternalTemp;
 int internalTemp;
 int intTempFrac;
 unsigned int Mask;
-char NumSensors = 1;
+char NumSensors = 2;
 char UpdateDelay;
 char i, j;
 char Rxchar;
