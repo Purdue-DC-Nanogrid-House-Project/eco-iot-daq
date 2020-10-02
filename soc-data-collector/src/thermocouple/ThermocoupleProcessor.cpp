@@ -56,7 +56,7 @@ void InitializeThermocoupleSensor() {
     digitalWrite(PINSC, LOW);   //put clock in low
 }
 
-float * ReadThermocoupleData() {
+void ReadThermocoupleData() {
     if (millis() > (time + ((unsigned int)UpdateDelay*1000))) {
         time = millis();
         if (j<(NumSensors-1)) j++;
@@ -211,24 +211,7 @@ float * ReadThermocoupleData() {
         //Serial.print(" degC");
     }//end reading sensors
 
-    //Serial.print(" Int: ");
     floatInternalTemp = (float)internalTemp * 0.0625;
-    //Serial.print(floatInternalTemp,4);
-    //This doesn't work for negative values
-    /*
-    Serial.print(internalTemp>>4);
-    Serial.print(".");
-    intTempFrac = (internalTemp & 0x0F)*625;
-    Serial.print(intTempFrac/1000);
-    intTempFrac = intTempFrac%1000;
-    Serial.print(intTempFrac/100);
-    intTempFrac = intTempFrac%100;
-    Serial.print(intTempFrac/10);
-    intTempFrac = intTempFrac%10;
-    Serial.print(intTempFrac/1);
-    */
-    //Serial.print(" degC");
-    //Serial.println("");
    
   }//end time
   if (Serial.available() > 0)    // Is a character waiting in the buffer?
@@ -303,6 +286,12 @@ float * ReadThermocoupleData() {
           EEPROM.write(511,1);
     }
   }
+}
 
-  return FloatTemp;
+void PublishSerialThermocoupleData() {
+  for (int i=0; i<8; i++){
+    Serial.print(FloatTemp[i], 2);
+    Serial.print(" ");
+  }
+  Serial.println("");
 }

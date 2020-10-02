@@ -5,7 +5,8 @@ from config.appconfig import config
 
 
 def main():
-    ser = serial.Serial('COM6', 9600)
+    usb_port = "/dev/ttyACM0"
+    ser = serial.Serial(usb_port, 9600)
     temp_data = []
 
     mqtt_client = mqtt.Client()

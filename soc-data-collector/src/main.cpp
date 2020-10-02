@@ -10,16 +10,9 @@ void setup() {
 }
 
 void loop() {
-float *temp;
-
-  temp = ReadThermocoupleData();
+  ReadThermocoupleData();
+  PublishSerialThermocoupleData();
   ReadAnalogData();
 
-  for (int i=0; i<8; i++){
-    Serial.print(temp[i], 2);
-    Serial.print(" ");
-  }
-  Serial.println("");
-
-  delay(250);
+  delay(1000);
 }

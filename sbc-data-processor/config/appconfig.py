@@ -15,4 +15,4 @@ class Config(object):
             self.__dict__.update(parser.items(name))
 
 
-config = Config(r'C:\Users\jonat\Desktop\Projects\Purdue\eco-iot-daq\sbc-data-processor\config\appconfig.ini')
+config = Config(r'/home/eco_iot_daq/Projects/sbc-data-processor/config/appconfig.ini')

@@ -1,2 +1,3 @@
 void InitializeThermocoupleSensor();
-float * ReadThermocoupleData();
+void ReadThermocoupleData();
+void PublishSerialThermocoupleData();
