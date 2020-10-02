@@ -9,6 +9,7 @@
 #define PINSC 13 //TCAmp Serial Clock (SCK)
 #define PINCS 9  //TCAmp Chip Select Change this to match the position of the Chip Select Link
 
+static float FloatTemp[8];
 int Temp[8];
 int SensorFail[8];
 char failMode[8];
@@ -33,7 +34,7 @@ int val = 0;
 int Param; 
 unsigned long time;
 
-void InitializeSensor() {
+void InitializeThermocoupleSensor() {
     if (EEPROM.read(511)==1)
     {
         NumSensors = EEPROM.read(0);
@@ -55,7 +56,7 @@ void InitializeSensor() {
     digitalWrite(PINSC, LOW);   //put clock in low
 }
 
-void CollectData() {
+float * ReadThermocoupleData() {
     if (millis() > (time + ((unsigned int)UpdateDelay*1000))) {
         time = millis();
         if (j<(NumSensors-1)) j++;
@@ -114,6 +115,7 @@ void CollectData() {
         delay(1);
       
       Temp[j] = 0;
+      FloatTemp[j] = 0;
       failMode[j] = 0;
       SensorFail[j] = 0;
       internalTemp = 0;
@@ -182,9 +184,9 @@ void CollectData() {
         delay(1);
       }
 
-      Serial.print("#");
-      Serial.print(j+1,DEC);
-      Serial.print(": ");
+      //Serial.print("#");
+      //Serial.print(j+1,DEC);
+      //Serial.print(": ");
       if (SensorFail[j] == 1)
       {
         Serial.print("FAIL");
@@ -204,13 +206,14 @@ void CollectData() {
       else
       {
         floatTemp = (float)Temp[j] * 0.25;
-        Serial.print(floatTemp,2);
-        Serial.print(" degC");
+        FloatTemp[j] = floatTemp;
+        //Serial.print(floatTemp,2);
+        //Serial.print(" degC");
     }//end reading sensors
 
-    Serial.print(" Int: ");
+    //Serial.print(" Int: ");
     floatInternalTemp = (float)internalTemp * 0.0625;
-    Serial.print(floatInternalTemp,4);
+    //Serial.print(floatInternalTemp,4);
     //This doesn't work for negative values
     /*
     Serial.print(internalTemp>>4);
@@ -224,8 +227,8 @@ void CollectData() {
     intTempFrac = intTempFrac%10;
     Serial.print(intTempFrac/1);
     */
-    Serial.print(" degC");
-    Serial.println("");
+    //Serial.print(" degC");
+    //Serial.println("");
    
   }//end time
   if (Serial.available() > 0)    // Is a character waiting in the buffer?
@@ -261,51 +264,45 @@ void CollectData() {
 
   }// end serial available
 
-
-   
   if (Cmdcomplete == 1)
   {
     Cmdcomplete = 0;
-     cmdbuf[0] = toupper(Rxbuf[1]); //copy and convert to upper case
-     cmdbuf[1] = toupper(Rxbuf[2]); //copy and convert to upper case
-     cmdbuf[2] = 0; //null terminate        Command = Chr(rxbuf(3)) + Chr(rxbuf(4))
-     //   Command = Ucase(command)
-  //Serial.println(cmdbuf);
-     valbuf[0] = Rxbuf[3]; //        Mystr = Chr(rxbuf(5))
-        R = Rxptr - 1;
-            for (i = 4 ; i <= R ; i++)//For I = 6 To R
-            {
-                valbuf[i-3] = Rxbuf[i]; //Mystr = Mystr + Chr(rxbuf(i))
-            }
+    cmdbuf[0] = toupper(Rxbuf[1]); //copy and convert to upper case
+    cmdbuf[1] = toupper(Rxbuf[2]); //copy and convert to upper case
+    cmdbuf[2] = 0; //null terminate        Command = Chr(rxbuf(3)) + Chr(rxbuf(4))
+    valbuf[0] = Rxbuf[3]; 
+    R = Rxptr - 1;
+      for (i = 4 ; i <= R ; i++)//For I = 6 To R
+      {
+          valbuf[i-3] = Rxbuf[i]; //Mystr = Mystr + Chr(rxbuf(i))
+      }
      valbuf[R+1] = 0; //null terminate
      Param = atoi(valbuf);//   Param = Val(mystr)
+    if (strcmp(cmdbuf,"NS")==0)       //NumSensors
+    {
+          //'Print "command was ON"
+          if ((Param <= 8) && (Param > 0)) 
+          {
+            NumSensors = Param;                   
+          }
+          
+    }
+    if (strcmp(cmdbuf,"UD")==0)       //UpdateDelay
+    {
+          //'Print "command was ON"
+          if ((Param <= 60) && (Param >= 0)) 
+          {
+            UpdateDelay = Param;                   
+          }
+          
+    }
+    if (strcmp(cmdbuf,"SV")==0)       //Save
+    {
+          EEPROM.write(0,NumSensors);
+          EEPROM.write(1,UpdateDelay);
+          EEPROM.write(511,1);
+    }
+  }
 
-     //Serial.println(Param); //   'Print "Parameter: " ; Param
-
-       
-              if (strcmp(cmdbuf,"NS")==0)       //NumSensors
-              {
-                   //'Print "command was ON"
-                   if ((Param <= 8) && (Param > 0)) 
-                   {
-                      NumSensors = Param;                   
-                   }
-                   
-              }
-              if (strcmp(cmdbuf,"UD")==0)       //UpdateDelay
-              {
-                   //'Print "command was ON"
-                   if ((Param <= 60) && (Param >= 0)) 
-                   {
-                      UpdateDelay = Param;                   
-                   }
-                   
-              }
-              if (strcmp(cmdbuf,"SV")==0)       //Save
-              {
-                   EEPROM.write(0,NumSensors);
-                   EEPROM.write(1,UpdateDelay);
-                   EEPROM.write(511,1);
-              }
-         }
+  return FloatTemp;
 }

@@ -1,0 +1,2 @@
+void InitializeAnalogSensor();
+void ReadAnalogData();

@@ -1,22 +1,25 @@
 #include <Arduino.h>
-#include "TcProcessor.h"
-
-int sensorPin = A3;
-int sensorValue = 0;
+#include "ThermocoupleProcessor.h"
+#include "AnalogProcessor.h"
 
 void setup() {
   Serial.begin(9600);  
 
-  InitializeSensor();
+  InitializeThermocoupleSensor();
+  InitializeAnalogSensor();
 }
 
 void loop() {
-  CollectData();
+float *temp;
 
-  sensorValue = analogRead(sensorPin);
-  float voltage= sensorValue * (5.0 / 1023.0);
-  Serial.print("    Voltage: ");
-  Serial.print(voltage);
+  temp = ReadThermocoupleData();
+  ReadAnalogData();
+
+  for (int i=0; i<8; i++){
+    Serial.print(temp[i], 2);
+    Serial.print(" ");
+  }
   Serial.println("");
-  delay(500);
+
+  delay(250);
 }
