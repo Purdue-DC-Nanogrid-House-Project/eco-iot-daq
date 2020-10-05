@@ -290,6 +290,7 @@ void ReadThermocoupleData() {
 
 void PublishSerialThermocoupleData() {
   for (int i=0; i<8; i++){
+    Serial.print("T ");
     Serial.print(FloatTemp[i], 2);
     Serial.print(" ");
   }
