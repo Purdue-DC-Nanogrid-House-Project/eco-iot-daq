@@ -25,7 +25,7 @@ def main():
         print(temp_data)
 
         # Publish to MQTT Broker
-        for tc_idx in range(8):
+        for tc_idx in range(len(temp_data)):
             topic_name = "Thermocouple_" + str(tc_idx)
             mqtt_client.publish(topic_name, str(temp_data[tc_idx]))
 
