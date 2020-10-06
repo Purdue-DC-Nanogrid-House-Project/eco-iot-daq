@@ -6,7 +6,7 @@ from config.appconfig import config
 
 
 def main():
-    usb_port = "/dev/ttyACM1"
+    usb_port = "/dev/ttyACM0"
     ser = serial.Serial(usb_port, 9600)
     temp_data = []
 
@@ -27,15 +27,27 @@ def main():
 
         if data[0] == DataType.Analog.value:
             # Publish to MQTT Broker
-            for a_idx in range(len(data)-1):
-                topic_name = "AnalogIn_" + str(a_idx)
-                mqtt_client.publish(topic_name, str(data[a_idx+1]))
+            # for a_idx in range(len(data)-1):
+            #     topic_name = "AnalogIn_" + str(a_idx)
+            #     mqtt_client.publish(topic_name, str(data[a_idx+
+            a_idx = 1
+            while a_idx <= len(data)/2:
+                topic_name = "AnalogIn_" + str(a_idx-1)
+                mqtt_client.publish(topic_name, str(data[2*a_idx-1]))
+                print(topic_name, str(data[2*a_idx-1]))
+                a_idx = a_idx + 1
 
         elif data[0] == DataType.Thermocouple.value:
             # Publish to MQTT Broker
-            for tc_idx in range(len(data)-1):
-                topic_name = "Thermocouple_" + str(tc_idx)
-                mqtt_client.publish(topic_name, str(data[tc_idx+1]))
+            # for tc_idx in range(len(data)-1):
+            tc_idx = 1
+            while tc_idx < len(data)/2:
+                topic_name = "Thermocouple_" + str(tc_idx-1)
+                mqtt_client.publish(topic_name, str(data[2*tc_idx-1]))
+                print(topic_name, str(data[2*tc_idx-1]))
+                tc_idx = tc_idx + 1
+
+        mqtt_client.publish('T_sat_low', 20.0)
 
 def on_connect():
     print()
