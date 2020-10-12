@@ -1,5 +1,7 @@
 # Read data over serial from connected SoC
 import serial
+import datetime
+from _csv import writer
 import paho.mqtt.client as mqtt
 from utilities.definitions import *
 from config.appconfig import config
@@ -49,12 +51,29 @@ def main():
 
         mqtt_client.publish('T_sat_low', 20.0)
 
+
 def on_connect():
     print()
 
 
-def on_message():
-    print()
+def on_message(client, userdata, msg):
+    print(msg.topic + " " + str(msg.payload))
+    msg_data = str(msg.payload).replace("b'", "").replace("'", "")
+
+    current_date = str(datetime.datetime.date(datetime.datetime.now()))
+    file_path = current_date + '_' + config.DATA_FILENAME + '.csv'
+    with open(file_path, 'a+', newline='') as \
+            write_obj:
+        now = datetime.datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+
+        # Create a writer object from csv module
+        csv_writer = writer(write_obj)
+        # Add contents of list as last row in the csv file
+        csv_writer.writerow([
+            current_time,
+            msg.topic,
+            msg_data])
 
 
 if __name__ == '__main__':
