@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 
-section_names = 'CONNECTION_PARMS',
+section_names = 'CONNECTION_PARMS', 'DATA_PARAMS',
 
 
 class Config(object):
