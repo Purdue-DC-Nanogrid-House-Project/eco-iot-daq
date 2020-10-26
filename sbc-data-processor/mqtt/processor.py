@@ -34,7 +34,7 @@ class MQTTProcessor:
         msg_data = str(msg.payload).replace("b'", "").replace("'", "")
 
         current_date = str(datetime.datetime.date(datetime.datetime.now()))
-        file_path = current_date + '_' + config.DATA_FILENAME + '.csv'
+        file_path = config.DATA_FILE_DIRECTORY + current_date + '_' + config.DATA_FILENAME + '.csv'
         with open(file_path, 'a+', newline='') as \
                 write_obj:
             now = datetime.datetime.now()
