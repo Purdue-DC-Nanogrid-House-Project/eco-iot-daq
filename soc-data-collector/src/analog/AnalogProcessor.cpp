@@ -12,8 +12,8 @@ void InitializeAnalogSensor() {
 void ReadAnalogData() {
     sensorValue3 = analogRead(sensorPin3);
     sensorValue4 = analogRead(sensorPin4);
-    float voltage3 = sensorValue3 * (5.0 / 1023.0);
-    float voltage4 = sensorValue4 * (5.0 / 1023.0);
+    float voltage3 = (sensorValue3 * (5.0 / 1023.0) * 27.402 - 43.672 + 14.7) * 6.89476;
+    float voltage4 = (sensorValue4 * (5.0 / 1023.0) * 48.285 - 6.665 + 14.7) * 6.89476;
     Serial.print("A ");
     Serial.print(voltage3);
     Serial.print(" A ");
