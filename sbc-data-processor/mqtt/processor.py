@@ -64,39 +64,43 @@ class MQTTProcessor:
                 string_n = b.decode()  # decode byte string into Unicode
                 serial_string = string_n.rstrip()  # remove \n and \r
 
-                # Parse received serial data
+                # Parse received serial data and publish to broker
                 data = serial_string.split()
                 serial_idx = 1
 
                 if data[0] == DataType.Analog.value:
                     while serial_idx <= len(data) / 2:
                         topic_name = "AnalogIn_" + str(serial_idx - 1)
-                        self._record_and_publish_msg_data(serial_idx, data, topic_name, current_datetime)
+                        msg_data = str(data[2 * serial_idx - 1])
+                        self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
                         serial_idx += 1
 
                 elif data[0] == DataType.Thermocouple.value:
                     while serial_idx < len(data) / 2:
                         topic_name = "Thermocouple_" + str(serial_idx - 1)
-                        self._record_and_publish_msg_data(serial_idx, data, topic_name, current_datetime)
+                        msg_data = str(data[2 * serial_idx - 1])
+                        self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
                         serial_idx += 1
 
-                self.mqtt_client.publish('T_sat_low', 20.0)
+                # Publish other data to broker
+                topic_name = 'T_sat_low'
+                msg_data = 20.0
+                self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
 
             except KeyboardInterrupt:
                 # Allows termination of the program at the terminal by entering "CTRL+C"
                 sys.exit("KeyboardInterrupt")
 
-    def _record_and_publish_msg_data(self, serial_idx, serial_data, topic_name, current_datetime):
+    def _record_and_publish_message_data(self, topic_name, message_data, current_datetime):
         # Obtain current timestamps
         current_date = current_datetime.strftime("%Y-%m-%d")
         current_time = current_datetime.strftime("%H:%M:%S.%f")
 
         # form the message and publish to the broker
-        msg_data = str(serial_data[2 * serial_idx - 1])
         message = (mqm.Message()
                    .set_topic_name(topic_name)
-                   .set_message_data(msg_data)
+                   .set_message_data(message_data)
                    .set_message_date(current_date)
                    .set_message_timestamp(current_time))
         self.mqtt_client.user_data_set(message)
-        self.mqtt_client.publish(topic_name, msg_data)
+        self.mqtt_client.publish(topic_name, message_data)
