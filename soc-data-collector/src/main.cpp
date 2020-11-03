@@ -14,5 +14,5 @@ void loop() {
   PublishSerialThermocoupleData();
   ReadAnalogData();
 
-  delay(1000);
+  delay(250);
 }
