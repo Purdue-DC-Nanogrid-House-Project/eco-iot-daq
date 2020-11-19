@@ -24,8 +24,10 @@ class MQTTProcessor:
         self.mqtt_client = mqtt.Client(clean_session=True)
         self.mqtt_client.on_connect = self._on_connect
         self.mqtt_client.on_publish = self._on_publish
+        self.mqtt_client.on_message = self._on_message
         self.mqtt_client.on_log = self._on_log
         self.mqtt_client.connect(config.MQTT_SERVER_IP, int(config.MQTT_PORT), int(config.KEEPALIVE_PERIOD))
+        self.mqtt_client.subscribe(config.MQTT_USER_INPUT_TOPIC_NAME)
 
     def _on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
@@ -33,22 +35,45 @@ class MQTTProcessor:
 
     @staticmethod
     def _on_publish(client, userdata, mid):
-        file_path = config.DATA_FILE_DIRECTORY + userdata.message_date + '_' + config.DATA_FILENAME + '.csv'
-        with open(file_path, 'a+', newline='') as write_obj:
-            # Create a writer object from csv module
-            csv_writer = writer(write_obj)
+        MQTTProcessor._save_csv_data(userdata)
 
-            # Add contents of list as last row in the csv file
-            csv_writer.writerow([
-                userdata.message_timestamp,
-                userdata.topic_name,
-                userdata.message_data])
+    @staticmethod
+    def _on_message(client, userdata, message):
+        # Obtain the current timestamp
+        current_datetime = datetime.datetime.now()
+        current_date = current_datetime.strftime("%Y-%m-%d")
+        current_time = current_datetime.strftime("%H:%M:%S.%f")
+
+        # Extract the received message data and save to the csv file
+        try:
+            msg = (mqm.Message()
+                   .set_topic_name(message.topic)
+                   .set_message_data(message.payload.decode("utf-8"))
+                   .set_message_date(current_date)
+                   .set_message_timestamp(current_time))
+            MQTTProcessor._save_csv_data(msg)
+        except UnicodeDecodeError:
+            # Malformed data received
+            pass
 
     @staticmethod
     def _on_log(client, userdata, level, buf):
         # Turn this on to enable debug logging
         # print("log: ", buf)
         pass
+
+    @staticmethod
+    def _save_csv_data(message):
+        file_path = config.DATA_FILE_DIRECTORY + message.message_date + '_' + config.DATA_FILENAME + '.csv'
+        with open(file_path, 'a+', newline='') as write_obj:
+            # Create a writer object from csv module
+            csv_writer = writer(write_obj)
+
+            # Add contents of list as last row in the csv file
+            csv_writer.writerow([
+                message.message_timestamp,
+                message.topic_name,
+                message.message_data])
 
     def process_serial_data_forever(self):
         while True:
