@@ -211,3 +211,5 @@ fabric.properties
 
 #IDE metadata
 **.idea/**
+.idea
+
