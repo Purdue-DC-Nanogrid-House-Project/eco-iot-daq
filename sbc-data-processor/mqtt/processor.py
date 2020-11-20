@@ -95,14 +95,14 @@ class MQTTProcessor:
 
                 if data[0] == DataType.Analog.value:
                     while serial_idx <= len(data) / 2:
-                        topic_name = "AnalogIn_" + str(serial_idx - 1)
+                        topic_name = DataSourceMapping.analog_dict[serial_idx]
                         msg_data = str(data[2 * serial_idx - 1])
                         self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
                         serial_idx += 1
 
                 elif data[0] == DataType.Thermocouple.value:
                     while serial_idx < len(data) / 2:
-                        topic_name = "Thermocouple_" + str(serial_idx - 1)
+                        topic_name = DataSourceMapping.thermocouple_dict[serial_idx]
                         msg_data = str(data[2 * serial_idx - 1])
                         self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
                         serial_idx += 1
