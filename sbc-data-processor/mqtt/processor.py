@@ -76,26 +76,6 @@ class MQTTProcessor:
                 message.message_data])
 
     def process_serial_data_forever(self):
-        # Dictionaries starting from 20201103
-        analog_dict = {
-            1: 'OnOff',
-            2: 'LiquidYesNo',
-            3: 'P_r_s',
-            4: 'P_r_exp_v_in',
-            5: 'N/A'
-        }
-
-        thermocouple_dict = {
-            1: 'T_r_s',
-            2: 'T_r_exp_v_in',
-            3: 'N/A3',
-            4: 'N/A4',
-            5: 'N/A5',
-            6: 'N/A6',
-            7: 'N/A7',
-
-        }
-
         while True:
             try:
                 # Loop through the MQTT client
@@ -115,24 +95,17 @@ class MQTTProcessor:
 
                 if data[0] == DataType.Analog.value:
                     while serial_idx <= len(data) / 2:
-<<<<<<< HEAD
                         topic_name = DataSourceMapping.analog_dict[serial_idx]
-=======
-                        topic_name = analog_dict[serial_idx]
->>>>>>> aec9a18962fe6674bf016f4cdce1bb6a9d9b2fbe
+                        topic_name = DataSourceMapping.analog_dict[serial_idx]
                         msg_data = str(data[2 * serial_idx - 1])
                         self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
                         serial_idx += 1
 
-
                 elif data[0] == DataType.Thermocouple.value:
                     while serial_idx < len(data) / 2:
-<<<<<<< HEAD
                         topic_name = DataSourceMapping.thermocouple_dict[serial_idx]
-=======
                         # topic_name = "Thermocouple_" + str(serial_idx - 1)
-                        topic_name = thermocouple_dict[serial_idx]
->>>>>>> aec9a18962fe6674bf016f4cdce1bb6a9d9b2fbe
+                        topic_name = DataSourceMapping.thermocouple_dict[serial_idx]
                         msg_data = str(data[2 * serial_idx - 1])
                         self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
                         serial_idx += 1
