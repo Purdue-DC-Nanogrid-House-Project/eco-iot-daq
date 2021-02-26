@@ -2,7 +2,6 @@ import sys
 import datetime
 from _csv import writer
 import paho.mqtt.client as mqtt
-import mqtt_comm.mqtt_message as mqm
 from utilities.definitions import *
 from config.appconfig import config
 
@@ -36,17 +35,17 @@ class MQTTProcessor:
         current_date = current_datetime.strftime("%Y-%m-%d")
         current_time = current_datetime.strftime("%H:%M:%S.%f")
 
-        # Extract the received message data and save to the csv file
-        try:
-            msg = (mqm.Message()
-                   .set_topic_name(message.topic)
-                   .set_message_data(message.payload.decode("utf-8"))
-                   .set_message_date(current_date)
-                   .set_message_timestamp(current_time))
-            MQTTProcessor._save_csv_data(msg)
-        except UnicodeDecodeError:
-            # Malformed data received
-            pass
+        # # Extract the received message data and save to the csv file
+        # try:
+        #     msg = (mqm.Message()
+        #            .set_topic_name(message.topic)
+        #            .set_message_data(message.payload.decode("utf-8"))
+        #            .set_message_date(current_date)
+        #            .set_message_timestamp(current_time))
+        #     MQTTProcessor._save_csv_data(msg)
+        # except UnicodeDecodeError:
+        #     # Malformed data received
+        #     pass
 
     @staticmethod
     def _on_log(client, userdata, level, buf):
@@ -82,10 +81,10 @@ class MQTTProcessor:
         current_time = current_datetime.strftime("%H:%M:%S.%f")
 
         # form the message and publish to the broker
-        message = (mqm.Message()
-                   .set_topic_name(topic_name)
-                   .set_message_data(message_data)
-                   .set_message_date(current_date)
-                   .set_message_timestamp(current_time))
-        self.mqtt_client.user_data_set(message)
+        # message = (mqm.Message()
+        #            .set_topic_name(topic_name)
+        #            .set_message_data(message_data)
+        #            .set_message_date(current_date)
+        #            .set_message_timestamp(current_time))
+        # self.mqtt_client.user_data_set(message)
         self.mqtt_client.publish(topic_name, message_data)

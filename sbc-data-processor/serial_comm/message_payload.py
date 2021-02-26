@@ -1,4 +1,4 @@
-class Message:
+class MessagePayload:
     def __init__(self):
         self.topic_name = []
         self.message_data = []

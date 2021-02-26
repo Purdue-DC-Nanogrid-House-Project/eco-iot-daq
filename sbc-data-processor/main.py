@@ -1,6 +1,5 @@
-import serial_comm.serial_processor as sprocessor
 import mqtt_comm.mqtt_processor as mprocessor
-
+import serial_comm.serial_processor as sprocessor
 
 def main():
     # Instantiate class objects
