@@ -4,6 +4,7 @@ import datetime
 import itertools
 import serial_comm.message_payload as mp
 import utilities.definitions as defs
+import utilities.pressure_calibration as cal
 from config.appconfig import config
 
 
@@ -111,6 +112,12 @@ class SerialProcessor:
             if data_source_name == defs.DataType.Unused.value:
                 return None
 
+            # Calibrate matching signal inputs
+            if data_source_name == defs.PressureSources.P_r_s.value:
+                data_value = cal.calibrate_prs_signal(data_value)
+            elif data_source_name == defs.PressureSources.P_r_exp_v_in:
+                data_value = cal.calibrate_prexpvin_signal(data_value)
+            
             # Build message payload
             proc_message = (mp.MessagePayload()
                 .set_topic_name(data_source_name)

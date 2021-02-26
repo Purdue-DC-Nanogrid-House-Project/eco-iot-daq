@@ -1,2 +1,2 @@
 void InitializeMux();
-void ReadMuxChannel(int channel);
+void ReadMuxChannels();

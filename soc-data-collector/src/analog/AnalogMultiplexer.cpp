@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+const int num_channels = 16;
+const int num_control_pins = 4;
+
 // Define Mux control pins
 int s0_pin = 2;
 int s1_pin = 3;
@@ -8,7 +11,7 @@ int s3_pin = 5;
 int mux_sig_pin = A0;
 
 // Define Mux array access
-int mux_channel_arr[16][4]={
+int mux_channel_arr[num_channels][num_control_pins]={
     {0,0,0,0}, //channel 0
     {1,0,0,0}, //channel 1
     {0,1,0,0}, //channel 2
@@ -41,19 +44,21 @@ void InitializeMux() {
     digitalWrite(s3_pin, LOW);
 }
 
-void ReadMuxChannel(int channel) {
-    int control_pin_arr[] = {s0_pin, s1_pin, s2_pin, s3_pin};
+void ReadMuxChannels() {
+    for(int channel = 0; channel < num_channels; channel++) {
+        int control_pin_arr[] = {s0_pin, s1_pin, s2_pin, s3_pin};
 
-    // Set the control pins needed to read the desired channel
-    for(int i = 0; i < 4; i ++) {
-        digitalWrite(control_pin_arr[i], mux_channel_arr[channel][i]);
+        // Set the control pins needed to read the desired channel
+        for(int i = 0; i < num_control_pins; i ++) {
+            digitalWrite(control_pin_arr[i], mux_channel_arr[channel][i]);
+        }
+
+        float analog_voltage = (analogRead(mux_sig_pin)/1023.0)*5.0;
+
+        Serial.print("AMUX");
+        Serial.print(channel);
+        Serial.print(": ");
+        Serial.print(analog_voltage);
+        Serial.println(" [V]");
     }
-
-    float analog_voltage = (analogRead(mux_sig_pin)/1023.0)*5.0;
-
-    Serial.print("AMUX");
-    Serial.print(channel);
-    Serial.print(": ");
-    Serial.print(analog_voltage);
-    Serial.println(" [V]");
 }

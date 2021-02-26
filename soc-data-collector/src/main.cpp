@@ -3,11 +3,13 @@
 #include "AnalogProcessor.h"
 #include "AnalogMultiplexer.h"
 
+int serialBaudRate = 9600;
+int delayBetweenReadings = 1000;
+
 void setup() {
-  Serial.begin(9600);  
+  Serial.begin(serialBaudRate);  
 
   InitializeThermocoupleSensor();
-  InitializeAnalogSensor();
   InitializeMux();
 }
 
@@ -15,8 +17,7 @@ void loop() {
   ReadThermocoupleData();
   PublishSerialThermocoupleData();
   ReadAnalogData();
-
-  ReadMuxChannel(0);
+  ReadMuxChannels();
   
-  delay(1000);
+  delay(delayBetweenReadings);
 }

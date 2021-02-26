@@ -2,7 +2,6 @@ import sys
 import datetime
 from _csv import writer
 import paho.mqtt.client as mqtt
-from utilities.definitions import *
 from config.appconfig import config
 
 
