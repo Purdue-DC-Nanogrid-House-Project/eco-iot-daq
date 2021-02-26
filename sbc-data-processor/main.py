@@ -1,11 +1,20 @@
-import mqtt.processor as processor
+import serial_comm.serial_processor as sprocessor
+import mqtt_comm.mqtt_processor as mprocessor
 
 
 def main():
-    p = processor.MQTTProcessor()
-    p.initialize_serial_connection()
-    p.initialize_mqtt_connection()
-    p.process_serial_data_forever()
+    # Instantiate class objects
+    sp = sprocessor.SerialProcessor()
+    mp = mprocessor.MQTTProcessor()
+
+    # Initialize connections
+    sp.initialize_serial_connection()
+    mp.initialize_mqtt_connection()
+
+    # Begin data processing loop
+    while True:
+        sp.process_serial_data()
+        mp.process_mqtt_data()
 
 
 if __name__ == '__main__':

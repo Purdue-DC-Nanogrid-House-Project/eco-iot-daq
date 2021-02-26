@@ -1,9 +1,8 @@
 import sys
 import datetime
 from _csv import writer
-import serial
 import paho.mqtt.client as mqtt
-import mqtt.message as mqm
+import mqtt_comm.mqtt_message as mqm
 from utilities.definitions import *
 from config.appconfig import config
 
@@ -11,14 +10,7 @@ from config.appconfig import config
 class MQTTProcessor:
     def __init__(self):
         self.mqtt_client = []
-        self.ser_client = []
         self.is_mqtt_connected = False
-        self.is_serial_connected = False
-
-    def initialize_serial_connection(self):
-        self.ser_client = serial.Serial(config.SERIAL_PORT, config.BAUD_RATE)
-        self.is_serial_connected = not self.ser_client.closed
-        print()
 
     def initialize_mqtt_connection(self):
         self.mqtt_client = mqtt.Client(clean_session=True)
@@ -62,6 +54,15 @@ class MQTTProcessor:
         # print("log: ", buf)
         pass
 
+    def process_mqtt_data(self):
+        try:
+            # Loop through the MQTT client
+            self.mqtt_client.loop(timeout=float(config.SERIAL_TIMEOUT))
+
+        except KeyboardInterrupt:
+            # Allows termination of the program at the terminal by entering "CTRL+C"
+            sys.exit("KeyboardInterrupt")
+
     @staticmethod
     def _save_csv_data(message):
         file_path = config.DATA_FILE_DIRECTORY + message.message_date + '_' + config.DATA_FILENAME + '.csv'
@@ -74,50 +75,6 @@ class MQTTProcessor:
                 message.message_timestamp,
                 message.topic_name,
                 message.message_data])
-
-    def process_serial_data_forever(self):
-        while True:
-            try:
-                # Loop through the MQTT client
-                self.mqtt_client.loop()
-
-                # Obtain the current timestamp
-                current_datetime = datetime.datetime.now()
-
-                # Read serial data in
-                b = self.ser_client.readline()  # read a byte string
-                string_n = b.decode()  # decode byte string into Unicode
-                serial_string = string_n.rstrip()  # remove \n and \r
-
-                # Parse received serial data and publish to broker
-                data = serial_string.split()
-                serial_idx = 1
-
-                if data[0] == DataType.Analog.value:
-                    while serial_idx <= len(data) / 2:
-                        topic_name = DataSourceMapping.analog_dict[serial_idx]
-                        topic_name = DataSourceMapping.analog_dict[serial_idx]
-                        msg_data = str(data[2 * serial_idx - 1])
-                        self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
-                        serial_idx += 1
-
-                elif data[0] == DataType.Thermocouple.value:
-                    while serial_idx < len(data) / 2:
-                        topic_name = DataSourceMapping.thermocouple_dict[serial_idx]
-                        # topic_name = "Thermocouple_" + str(serial_idx - 1)
-                        topic_name = DataSourceMapping.thermocouple_dict[serial_idx]
-                        msg_data = str(data[2 * serial_idx - 1])
-                        self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
-                        serial_idx += 1
-
-                # Publish other data to broker
-                topic_name = 'T_sat_low'
-                msg_data = 20.0
-                self._record_and_publish_message_data(topic_name, msg_data, current_datetime)
-
-            except KeyboardInterrupt:
-                # Allows termination of the program at the terminal by entering "CTRL+C"
-                sys.exit("KeyboardInterrupt")
 
     def _record_and_publish_message_data(self, topic_name, message_data, current_datetime):
         # Obtain current timestamps

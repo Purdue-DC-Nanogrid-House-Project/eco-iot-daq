@@ -20,10 +20,10 @@ int intTempFrac;
 unsigned int Mask;
 char NumSensors = 2;
 char UpdateDelay;
-char i, j;
+int i, j;
 char Rxchar;
 char Rxenable;
-char Rxptr;
+int Rxptr;
 char Cmdcomplete;
 char R;
 char Rxbuf[32];
@@ -184,23 +184,21 @@ void ReadThermocoupleData() {
         delay(1);
       }
 
-      //Serial.print("#");
-      //Serial.print(j+1,DEC);
-      //Serial.print(": ");
+      // Debugging
       if (SensorFail[j] == 1)
       {
-        Serial.print("FAIL");
+        //Serial.print("FAIL");
         if ((failMode[j] & 0b0100) == 0b0100)
         {
-          Serial.print(" SHORT TO VCC");
+          //Serial.print(" SHORT TO VCC");
         }
         if ((failMode[j] & 0b0010) == 0b0010)
         {
-          Serial.print(" SHORT TO GND");
+          //Serial.print(" SHORT TO GND");
         }
         if ((failMode[j] & 0b0001) == 0b0001)
         {
-          Serial.print(" OPEN CIRCUIT");
+          //Serial.print(" OPEN CIRCUIT");
         }
       }
       else
@@ -289,11 +287,11 @@ void ReadThermocoupleData() {
 }
 
 void PublishSerialThermocoupleData() {
-  
   for (int i=0; i<8; i++){
-    Serial.print("T ");  
+    Serial.print("TEMP");
+    Serial.print((i+1));
+    Serial.print(": ");
     Serial.print(FloatTemp[i], 2);
-    Serial.print(" ");
+    Serial.println(" [C]");
   }
-  Serial.println("");
 }

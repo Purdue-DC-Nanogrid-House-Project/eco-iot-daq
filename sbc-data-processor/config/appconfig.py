@@ -1,18 +1,17 @@
 from configparser import ConfigParser
+import os
 
-section_names = 'CONNECTION_PARAMS', 'DATA_PARAMS',
 
-
-class Config(object):
-    def __init__(self, *file_names):
+class Config:
+    def __init__(self, config_file_name):
         parser = ConfigParser()
         parser.optionxform = str
-        print(file_names)
-        found = parser.read(file_names)
+        found = parser.read(os.path.join(os.path.dirname(__file__), config_file_name))
         if not found:
             raise ValueError('No config file found!')
-        for name in section_names:
+        for name in parser.sections():
             self.__dict__.update(parser.items(name))
 
 
-config = Config(r'/home/eco_iot_daq/Projects/sbc-data-processor/config/appconfig.ini')
+# Specify your config file name and extension here
+config = Config('appconfig.ini')
