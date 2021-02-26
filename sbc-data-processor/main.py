@@ -12,8 +12,9 @@ def main():
 
     # Begin data processing loop
     while True:
-        sp.process_serial_data()
-        mp.process_mqtt_data()
+        proc_message = sp.process_serial_data()
+        if proc_message:
+            mp.process_mqtt_data(proc_message)
 
 
 if __name__ == '__main__':

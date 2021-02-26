@@ -1,7 +1,8 @@
 class MessagePayload:
     def __init__(self):
         self.topic_name = []
-        self.message_data = []
+        self.message_data_value = []
+        self.message_data_units = []
         self.message_date = []
         self.message_timestamp = []
 
@@ -9,8 +10,12 @@ class MessagePayload:
         self.topic_name = topic_name
         return self
 
-    def set_message_data(self, message_data):
-        self.message_data = message_data
+    def set_message_data_value(self, message_data_value):
+        self.message_data_value = message_data_value
+        return self
+
+    def set_message_data_units(self, message_data_units):
+        self.message_data_units = message_data_units
         return self
 
     def set_message_date(self, message_date):

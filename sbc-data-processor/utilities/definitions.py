@@ -26,6 +26,7 @@ class DataSourceMapping:
         5: 'N/A',
         6: 'N/A',
         7: 'N/A',
+        8: 'N/A',
     }
 
     AMultiplexer_Map = {
