@@ -2,6 +2,7 @@
 #include "ThermocoupleProcessor.h"
 #include "AnalogProcessor.h"
 #include "AnalogMultiplexer.h"
+#include "DigitalProcessor.h"
 
 int serialBaudRate = 9600;
 int delayBetweenReadings = 1000;
@@ -18,6 +19,7 @@ void loop() {
   PublishSerialThermocoupleData();
   ReadAnalogData();
   ReadMuxChannels();
+  ReadDigitalData();
   
   delay(delayBetweenReadings);
 }

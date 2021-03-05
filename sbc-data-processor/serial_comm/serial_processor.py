@@ -59,6 +59,7 @@ class SerialProcessor:
         # Check if data ID is present
         for data_id in itertools.chain(
             defs.DataSourceMapping.Analog_Map, 
+            defs.DataSourceMapping.Digital_Map,
             defs.DataSourceMapping.Thermocouple_Map,
             defs.DataSourceMapping.AMultiplexer_Map):
             if str(data_id) in serial_string:
@@ -101,6 +102,9 @@ class SerialProcessor:
             # Determine data source
             if data_type_id == defs.DataType.Analog.value:
                 data_source_name = defs.DataSourceMapping.Analog_Map[data_type_index] 
+
+            elif data_type_id == defs.DataType.Digital.value:
+                data_source_name = defs.DataSourceMapping.Digital_Map[data_type_index] 
                 
             elif data_type_id == defs.DataType.Thermocouple.value:
                 data_source_name = defs.DataSourceMapping.Thermocouple_Map[data_type_index]
@@ -115,7 +119,7 @@ class SerialProcessor:
             # Calibrate matching signal inputs
             if data_source_name == defs.PressureSources.P_r_s.value:
                 data_value = cal.calibrate_prs_signal(data_value)
-            elif data_source_name == defs.PressureSources.P_r_exp_v_in:
+            elif data_source_name == defs.PressureSources.P_r_exp_v_in.value:
                 data_value = cal.calibrate_prexpvin_signal(data_value)
             
             # Build message payload
