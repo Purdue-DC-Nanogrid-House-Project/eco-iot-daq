@@ -21,10 +21,10 @@ void ReadDigitalData() {
     for (int index=1; index <= num_digital_pins; index++){
         digSensorValueArr[index-1] = digitalRead(digSensorPinArr[index-1]);
 
-        Serial.print("DIGL");
-        Serial.print(index);
-        Serial.print(": ");
+        Serial.print("DIGL,");
+        Serial.print(digSensorPinArr[index-1]);
+        Serial.print(",");
         Serial.print(digSensorValueArr[index-1]);
-        Serial.println(" [-]");
+        Serial.println(",[-]");
     }
 }

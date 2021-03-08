@@ -47,9 +47,7 @@ class SerialProcessor:
     def _perform_serial_data_validation(serial_string):
         is_data_type_present = False
         is_data_id_present = False
-        is_data_value_present = True    # TBD: Need to design an appropriate verification for this
-        is_data_units_present = False    
-        is_single_delimiter_present = False
+        is_message_format_valid = False    
 
         # Check if data type is present
         for data_type in defs.DataType:
@@ -65,41 +63,29 @@ class SerialProcessor:
             if str(data_id) in serial_string:
                 is_data_id_present = True
 
-        # Check if data units is present
-        if (config.DATA_UNIT_DELIMITER in serial_string 
-            and config.DATA_END_DELIMITER in serial_string):
-            is_data_units_present = True
-
-        # Checkif multiple delimiters are present
-        if (serial_string.count(config.DATA_VALUE_DELIMITER) == 1
-            or serial_string.count(config.DATA_UNIT_DELIMITER) == 1
-            or serial_string.count(config.DATA_END_DELIMITER) == 1):
-            is_single_delimiter_present = True
+        # Check if correct number of delimiters are present
+        number_of_delimiters = len([i for i, letter in enumerate(serial_string) if letter == config.DATA_VALUE_DELIMITER])
+        if (int(config.NUMBER_OF_DATA_FIELDS) == (number_of_delimiters + 1)):
+            is_message_format_valid = True
 
         return (is_data_type_present 
                 and is_data_id_present 
-                and is_data_value_present 
-                and is_data_units_present
-                and is_single_delimiter_present)
+                and is_message_format_valid)
 
     @staticmethod
     def _parse_serial_data_into_message(serial_string, current_date, current_timestamp):
-        try:
-            # Determine message type 
-            data_type_id = serial_string[:int(config.DATA_TYPE_CHAR_LEN)]
-            data_type_index = int(serial_string[int(config.DATA_TYPE_CHAR_LEN)])
-            data_source_name = []
+        # Determine delimiter locations
+        delimiter_indices = [i for i, letter in enumerate(serial_string) if letter == config.DATA_VALUE_DELIMITER]
 
-            # Extract data value
-            data_value_start_index = serial_string.index(config.DATA_VALUE_DELIMITER)
-            data_value_end_index = serial_string.index(config.DATA_UNIT_DELIMITER)
-            data_value = serial_string[data_value_start_index+2:data_value_end_index-1]
-            
-            # Extract data units
-            data_unit_end_index = serial_string.index(config.DATA_END_DELIMITER)
-            data_units = serial_string[data_value_end_index+1:data_unit_end_index]
+        # Extract data information
+        data_type_id  = serial_string[:delimiter_indices[0]]
+        data_type_index = int(serial_string[delimiter_indices[0]+1:delimiter_indices[1]])
+        data_value = float(serial_string[delimiter_indices[1]+1:delimiter_indices[2]])
+        data_units = serial_string[delimiter_indices[2]+1:]
+        data_source_name = []   
 
-            # Determine data source
+        try:       
+            # Determine data source name from mapping
             if data_type_id == defs.DataType.Analog.value:
                 data_source_name = defs.DataSourceMapping.Analog_Map[data_type_index] 
 
@@ -115,25 +101,24 @@ class SerialProcessor:
             # If data source is unconfigured, return empty payload
             if data_source_name == defs.DataType.Unused.value:
                 return None
-
-            # Calibrate matching signal inputs
-            if data_source_name == defs.PressureSources.P_r_s.value:
-                data_value = cal.calibrate_prs_signal(data_value)
-            elif data_source_name == defs.PressureSources.P_r_exp_v_in.value:
-                data_value = cal.calibrate_prexpvin_signal(data_value)
-            
-            # Build message payload
-            proc_message = (mp.MessagePayload()
-                .set_topic_name(data_source_name)
-                .set_message_data_value(data_value)
-                .set_message_data_units(data_units)
-                .set_message_date(current_date)
-                .set_message_timestamp(current_timestamp))
-            return proc_message
-                
         except:
             # Malformed serial data received
             pass
+
+        # Calibrate matching signal inputs
+        if data_source_name == defs.PressureSources.P_r_s.value:
+            data_value = cal.calibrate_prs_signal(data_value)
+        elif data_source_name == defs.PressureSources.P_r_exp_v_in.value:
+            data_value = cal.calibrate_prexpvin_signal(data_value)
+        
+        # Build message payload
+        proc_message = (mp.MessagePayload()
+            .set_topic_name(data_source_name)
+            .set_message_data_value(data_value)
+            .set_message_data_units(data_units)
+            .set_message_date(current_date)
+            .set_message_timestamp(current_timestamp))
+        return proc_message
 
     def construct_formatted_message(self):
         pass

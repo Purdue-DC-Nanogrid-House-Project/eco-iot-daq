@@ -1,3 +1,4 @@
+import utilities.io as io
 import mqtt_comm.mqtt_processor as mprocessor
 import serial_comm.serial_processor as sprocessor
 
@@ -13,7 +14,10 @@ def main():
     # Begin data processing loop
     while True:
         proc_message = sp.process_serial_data()
+
+        # If a valid message was received, save locally and transmit the data over MQTT 
         if proc_message:
+            io.IO_Operations.save_processed_data(proc_message)
             mp.process_mqtt_data(proc_message)
 
 

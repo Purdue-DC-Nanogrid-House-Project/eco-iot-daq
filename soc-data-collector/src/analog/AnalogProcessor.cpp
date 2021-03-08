@@ -14,10 +14,10 @@ void ReadAnalogData() {
         anaSensorValueArr[index-1] = analogRead(anaSensorPinArr[index-1]);
         float voltage = anaSensorValueArr[index-1] * (5.0 / 1023.0);
 
-        Serial.print("ANLG");
+        Serial.print("ANLG,");
         Serial.print(index);
-        Serial.print(": ");
+        Serial.print(",");
         Serial.print(voltage);
-        Serial.println(" [V]");
+        Serial.println(",[V]");
     }
 }

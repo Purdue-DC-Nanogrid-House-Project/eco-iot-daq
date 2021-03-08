@@ -213,3 +213,5 @@ fabric.properties
 **.idea/**
 .idea
 
+# Ignore local data
+**/data

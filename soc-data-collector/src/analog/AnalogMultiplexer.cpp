@@ -55,10 +55,10 @@ void ReadMuxChannels() {
 
         float analog_voltage = (analogRead(mux_sig_pin)/1023.0)*5.0;
 
-        Serial.print("AMUX");
+        Serial.print("AMUX,");
         Serial.print(channel);
-        Serial.print(": ");
+        Serial.print(",");
         Serial.print(analog_voltage);
-        Serial.println(" [V]");
+        Serial.println(",[V]");
     }
 }

@@ -12,6 +12,7 @@ class AnalogSources(Enum):
     pass
 
 class DigitalSources(Enum):
+    LiquidYesNo = 'LiquidYesNo'
     OnOff = 'OnOff'
 
 class ThermocoupleSources(Enum):
@@ -19,8 +20,6 @@ class ThermocoupleSources(Enum):
     T_r_exp_v_in = 'T_r_exp_v_in'
 
 class PressureSources(Enum):
-    OnOff = 'OnOff'
-    LiquidYesNo = 'LiquidYesNo'
     P_r_s = 'P_r_s'
     P_r_exp_v_in = 'P_r_exp_v_in'
 
@@ -46,38 +45,38 @@ class DataSourceMapping:
     }
 
     Digital_Map = {
-        22: DataType.Digital.value,
-        23: DataType.Digital.value,
-        24: DataType.Digital.value,
-        25: DataType.Digital.value,
-        26: DataType.Digital.value,
-        27: DataType.Digital.value,
-        28: DataType.Digital.value,
-        29: DataType.Digital.value,
-        30: DataType.Digital.value,
-        31: DataType.Digital.value,
-        32: DataType.Digital.value,
-        33: DataType.Digital.value,
-        34: DataType.Digital.value,
-        35: DataType.Digital.value,
-        36: DataType.Digital.value,
-        37: DataType.Digital.value,
-        38: DataType.Digital.value,
-        39: DataType.Digital.value,
-        40: DataType.Digital.value,
-        41: DataType.Digital.value,
-        42: DataType.Digital.value,
-        43: DataType.Digital.value,
-        44: DataType.Digital.value,
-        45: DataType.Digital.value,
-        46: DataType.Digital.value,
-        47: DataType.Digital.value,
-        48: DataType.Digital.value,
-        49: DataType.Digital.value,
-        50: DataType.Digital.value,
-        51: DataType.Digital.value,
-        52: DataType.Digital.value,
-        53: DataType.Digital.value,
+        22: DataType.Unused.value,
+        23: DataType.Unused.value,
+        24: DataType.Unused.value,
+        25: DataType.Unused.value,
+        26: DataType.Unused.value,
+        27: DataType.Unused.value,
+        28: DataType.Unused.value,
+        29: DataType.Unused.value,
+        30: DigitalSources.LiquidYesNo.value,
+        31: DigitalSources.OnOff.value,
+        32: DataType.Unused.value,
+        33: DataType.Unused.value,
+        34: DataType.Unused.value,
+        35: DataType.Unused.value,
+        36: DataType.Unused.value,
+        37: DataType.Unused.value,
+        38: DataType.Unused.value,
+        39: DataType.Unused.value,
+        40: DataType.Unused.value,
+        41: DataType.Unused.value,
+        42: DataType.Unused.value,
+        43: DataType.Unused.value,
+        44: DataType.Unused.value,
+        45: DataType.Unused.value,
+        46: DataType.Unused.value,
+        47: DataType.Unused.value,
+        48: DataType.Unused.value,
+        49: DataType.Unused.value,
+        50: DataType.Unused.value,
+        51: DataType.Unused.value,
+        52: DataType.Unused.value,
+        53: DataType.Unused.value,
     }
 
     Thermocouple_Map = {
@@ -92,8 +91,8 @@ class DataSourceMapping:
     }
 
     AMultiplexer_Map = {
-        0: PressureSources.OnOff.value,
-        1: PressureSources.LiquidYesNo.value,
+        0: DataType.Unused.value,
+        1: DataType.Unused.value,
         2: PressureSources.P_r_s.value,
         3: PressureSources.P_r_exp_v_in.value,
         4: DataType.Unused.value,
