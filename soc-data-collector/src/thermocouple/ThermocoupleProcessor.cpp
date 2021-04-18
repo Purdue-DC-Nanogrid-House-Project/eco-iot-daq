@@ -18,7 +18,7 @@ float floatInternalTemp;
 int internalTemp;
 int intTempFrac;
 unsigned int Mask;
-char NumSensors = 2;
+char NumSensors = 6;
 char UpdateDelay;
 int i, j;
 char Rxchar;
@@ -57,6 +57,8 @@ void InitializeThermocoupleSensor() {
 }
 
 void ReadThermocoupleData() {
+    Serial.print("Thermo Delay: ");
+    Serial.println(millis());
     if (millis() > (time + ((unsigned int)UpdateDelay*1000))) {
         time = millis();
         if (j<(NumSensors-1)) j++;

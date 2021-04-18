@@ -9,7 +9,10 @@ class DataType(Enum):
     Unused = 'N/A'
 
 class AnalogSources(Enum):
-    pass
+    g_x = 'g_x'
+    g_y = 'g_y'
+    g_z = 'g_z'
+    liquid_level = 'liquid_level'
 
 class DigitalSources(Enum):
     LiquidYesNo = 'LiquidYesNo'
@@ -18,10 +21,14 @@ class DigitalSources(Enum):
 class ThermocoupleSources(Enum):
     T_r_s = 'T_r_s'
     T_r_exp_v_in = 'T_r_exp_v_in'
+    T_3 = 'T_3'
+    T_4 = 'T_4'
+    T_5 = 'T_5'
 
 class PressureSources(Enum):
     P_r_s = 'P_r_s'
     P_r_exp_v_in = 'P_r_exp_v_in'
+    P_r_exp_v_out = 'P_r_exp_v_out'
 
 
 # Data source mapping starting from 2021/02/26
@@ -82,22 +89,22 @@ class DataSourceMapping:
     Thermocouple_Map = {
         1: ThermocoupleSources.T_r_s.value,
         2: ThermocoupleSources.T_r_exp_v_in.value,
-        3: DataType.Unused.value,
-        4: DataType.Unused.value,
+        3: ThermocoupleSources.T_3.value,
+        4: ThermocoupleSources.T_4.value,
         5: DataType.Unused.value,
-        6: DataType.Unused.value,
+        6: ThermocoupleSources.T_5.value,
         7: DataType.Unused.value,
         8: DataType.Unused.value,
     }
 
     AMultiplexer_Map = {
-        0: DataType.Unused.value,
-        1: DataType.Unused.value,
-        2: PressureSources.P_r_s.value,
-        3: PressureSources.P_r_exp_v_in.value,
-        4: DataType.Unused.value,
-        5: DataType.Unused.value,
-        6: DataType.Unused.value,
+        0: AnalogSources.g_x.value,
+        1: AnalogSources.g_y.value,
+        2: AnalogSources.g_z.value,
+        3: PressureSources.P_r_s.value,
+        4: PressureSources.P_r_exp_v_in.value,
+        5: PressureSources.P_r_exp_v_out.value,
+        6: AnalogSources.liquid_level.value,
         7: DataType.Unused.value,
         8: DataType.Unused.value,
         9: DataType.Unused.value,

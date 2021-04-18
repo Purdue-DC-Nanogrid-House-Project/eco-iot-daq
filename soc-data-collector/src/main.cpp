@@ -4,8 +4,8 @@
 #include "AnalogMultiplexer.h"
 #include "DigitalProcessor.h"
 
-int serialBaudRate = 9600;
-int delayBetweenReadings = 1000;
+unsigned long serialBaudRate = 115200;
+int delayBetweenReadings = 200;
 
 void setup() {
   Serial.begin(serialBaudRate);  

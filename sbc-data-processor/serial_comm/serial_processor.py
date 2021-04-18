@@ -4,7 +4,9 @@ import datetime
 import itertools
 import serial_comm.message_payload as mp
 import utilities.definitions as defs
-import utilities.pressure_calibration as cal
+import utilities.pressure_calibration as cal_p
+import utilities.accelerometer_calibration as cal_a
+import utilities.liquid_level_calibration as cal_l
 from config.appconfig import config
 
 
@@ -42,6 +44,10 @@ class SerialProcessor:
             # Allows termination of the program at the terminal by entering "CTRL+C"
             sys.exit("KeyboardInterrupt")
 
+        except UnicodeDecodeError:
+            # Invalid serial data was received
+            print('UNICODE DECODE ERROR')
+            print(b)
 
     @staticmethod
     def _perform_serial_data_validation(serial_string):
@@ -78,11 +84,15 @@ class SerialProcessor:
         delimiter_indices = [i for i, letter in enumerate(serial_string) if letter == config.DATA_VALUE_DELIMITER]
 
         # Extract data information
-        data_type_id  = serial_string[:delimiter_indices[0]]
-        data_type_index = int(serial_string[delimiter_indices[0]+1:delimiter_indices[1]])
-        data_value = float(serial_string[delimiter_indices[1]+1:delimiter_indices[2]])
-        data_units = serial_string[delimiter_indices[2]+1:]
-        data_source_name = []   
+        try:
+            data_type_id  = serial_string[:delimiter_indices[0]]
+            data_type_index = int(serial_string[delimiter_indices[0]+1:delimiter_indices[1]])
+            data_value = float(serial_string[delimiter_indices[1]+1:delimiter_indices[2]])
+            data_units = serial_string[delimiter_indices[2]+1:]
+            data_source_name = []   
+        except ValueError:
+            print('VALUE ERROR')
+            print(serial_string)
 
         try:       
             # Determine data source name from mapping
@@ -105,11 +115,25 @@ class SerialProcessor:
             # Malformed serial data received
             pass
 
-        # Calibrate matching signal inputs
+        # Calibration of pressure signals
         if data_source_name == defs.PressureSources.P_r_s.value:
-            data_value = cal.calibrate_prs_signal(data_value)
+            data_value = cal_p.calibrate_prs_signal(data_value)
         elif data_source_name == defs.PressureSources.P_r_exp_v_in.value:
-            data_value = cal.calibrate_prexpvin_signal(data_value)
+            data_value = cal_p.calibrate_prexpvin_signal(data_value)
+        elif data_source_name == defs.PressureSources.P_r_exp_v_out.value:
+            data_value = cal_p.calibrate_prexpvout_signal(data_value)
+
+        # Calibration of accelerometer signals
+        elif data_source_name == defs.AnalogSources.g_x.value:
+            data_value = cal_a.calibrate_g_x_signal(data_value)
+        elif data_source_name == defs.AnalogSources.g_y.value:
+            data_value = cal_a.calibrate_g_y_signal(data_value)
+        elif data_source_name == defs.AnalogSources.g_z.value:
+            data_value = cal_a.calibrate_g_z_signal(data_value)
+
+        # Calibration of liquid level signals
+        elif data_source_name == defs.AnalogSources.liquid_level.value:
+            data_value = cal_l.calibrate_liquidlevel_signal(data_value)
         
         # Build message payload
         proc_message = (mp.MessagePayload()

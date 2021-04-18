@@ -4,7 +4,7 @@ import serial_comm.serial_processor as sprocessor
 
 def main():
     # Instantiate class objects
-    sp = sprocessor.SerialProcessor()
+    sp = sprocessor.SerialProcessor()   
     mp = mprocessor.MQTTProcessor()
 
     # Initialize connections

@@ -215,3 +215,6 @@ fabric.properties
 
 # Ignore local data
 **/data
+
+# Ignore test files
+**/test

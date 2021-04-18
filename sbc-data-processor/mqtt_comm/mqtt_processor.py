@@ -47,3 +47,9 @@ class MQTTProcessor:
         except KeyboardInterrupt:
             # Allows termination of the program at the terminal by entering "CTRL+C"
             sys.exit("KeyboardInterrupt")
+
+        except ValueError:
+            # Something is happening here and we don't know why
+            print('MQTT VALUE ERROR')
+            print('TopicName: ' + proc_message.topic_name)
+            print('MessageData: ' + proc_message.message_data_value)
