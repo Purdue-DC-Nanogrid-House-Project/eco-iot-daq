@@ -46,14 +46,13 @@ class SerialProcessor:
 
         except UnicodeDecodeError:
             # Invalid serial data was received
-            print('UNICODE DECODE ERROR')
-            print(b)
+            pass
 
     @staticmethod
     def _perform_serial_data_validation(serial_string):
         is_data_type_present = False
         is_data_id_present = False
-        is_message_format_valid = False    
+        is_message_format_valid = False 
 
         # Check if data type is present
         for data_type in defs.DataType:
@@ -89,10 +88,11 @@ class SerialProcessor:
             data_type_index = int(serial_string[delimiter_indices[0]+1:delimiter_indices[1]])
             data_value = float(serial_string[delimiter_indices[1]+1:delimiter_indices[2]])
             data_units = serial_string[delimiter_indices[2]+1:]
-            data_source_name = []   
+            data_source_name = []  
+
         except ValueError:
-            print('VALUE ERROR')
-            print(serial_string)
+            # Data is missing or characters are unrecognizable, return empty message
+            return None
 
         try:       
             # Determine data source name from mapping
@@ -112,8 +112,12 @@ class SerialProcessor:
             if data_source_name == defs.DataType.Unused.value:
                 return None
         except:
-            # Malformed serial data received
-            pass
+            # Malformed serial data received, return empty message
+            return None
+
+        # Verify data source name is present
+        if data_source_name == []:
+            return None
 
         # Calibration of pressure signals
         if data_source_name == defs.PressureSources.P_r_s.value:
@@ -143,6 +147,3 @@ class SerialProcessor:
             .set_message_date(current_date)
             .set_message_timestamp(current_timestamp))
         return proc_message
-
-    def construct_formatted_message(self):
-        pass
